@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "stm32f4xx_hal_conf.h"
 #include "stm32f4xx_it.h"
+#include "firCoeffs.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +35,9 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define BUFFER_SIZE 64
+#define AMP 		1
+#define FS_INT 		4095
+#define FS_INT_HALF 2047
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -49,19 +53,10 @@ DMA_HandleTypeDef hdma_adc3;
 __IO uint16_t buffer[BUFFER_SIZE];			//Tu cu spremati digitalizirani signal iz ADC-a
 __IO uint16_t array[BUFFER_SIZE];			//Tu cu spremati digitalizirani signal iz buffera spreman za filtriranje
 __IO uint16_t filteredArray[BUFFER_SIZE];	//Tu cu spremati isfiltrirani signal
-__IO uint16_t firCoef_HP[BUFFER_SIZE + 2] = {0.0008, -0.0005, 0, 0.0006, -0.0012, 0.0015, -0.0011, 0, 0.0017, -0.0033, 0.0039, -0.0029, 0, 0.0040,		//Tu cu spremiti izracunate koeficijente visokopropusnog fir filtra iz matlaba 	fir1(63, 0.8, 'high')
-											-0.0076, 0.0088, -0.0063, 0, 0.0084, -0.0157, 0.0181, -0.0129, 0, 0.0173, -0.0327,  0.0387,-0.0288, 0,
-											 0.0451, -0.0989, 0.1500, -0.1867, 0.2000, -0.1867, 0.1500, -0.0989, 0.0451, 0, -0.0288, 0.0387, -0.0327, 0.0173,
-											 0, -0.0129, 0.0181, -0.0157, 0.0084, 0, -0.0063, 0.0088, -0.0076, 0.0040, 0, -0.0029, 0.0039, -0.0033,
-											 0.0017, 0, -0.0011, 0.0015, -0.0012, 0.0006, 0, -0.0005, 0.0008};
-}
-__IO uint16_t firCoef_LP[BUFFER_SIZE] = {0.0007, 0.0003, -0.0003, -0.0009, -0.0013, -0.0013, -0.0006, 0.0008, 0.0024, 0.0036, 0.0035, 0.0016, -0.0019, -0.0058,		//Tu cu spremiti izracunate koeficijente niskopropusnog fir filtra iz matlaba fir1(63, 0.2)
-											 -0.0084, -0.0079, -0.0035, 0.0041, 0.0123, 0.0175, 0.0163, 0.0072, -0.0084, -0.0256, -0.0373, -0.0359, -0.0167, 0.0209,
-											  0.0716, 0.1256, 0.1709, 0.1967, 0.1967, 0.1709, 0.1256, 0.0716, 0.0209, -0.0167, -0.0359, -0.0373, -0.0256, -0.0084,
-											  0.0072, 0.0163, 0.0175, 0.0123, 0.0041, -0.0035, -0.0079, -0.0084, -0.0058, -0.0019, 0.0016, 0.0035, 0.0036, 0.0024,
-											  0.0008, -0.0006, -0.0013, -0.0013, -0.0009, -0.0003, 0.0003, 0.0007};
-
+__IO float firCoef_HP[BUFFER_SIZE + 1];		//Polje za koeficijente visokopropusnog filtra
+__IO float firCoef_LP[BUFFER_SIZE];			//Polje za koeficijente niskopropusnog filtra
 _Bool filterType = 0;						//Varijabla za odabir vrste filtra (1->HP, 0->LP), Stavio sam zasad u 0 da se koristi niski filtar za testiranje
+double cutOffFreq;							//Varijabla u kojoj je spremljena granicna frekvencija
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -85,7 +80,7 @@ static void MX_ADC3_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  firCoefInit();
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -121,7 +116,34 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+	  if(cutOffFreq == 0.1) {
+	    	 	 copy_LP(firCoef_LP, firCoef_LP_01);
+	    	 copy_HP(firCoef_HP, firCoef_HP_01);
+	       } else if(cutOffFreq == 0.2) {
+	         copy_LP(firCoef_LP, firCoef_LP_02);
+	         copy_HP(firCoef_HP, firCoef_HP_02);
+	       } else if(cutOffFreq == 0.3) {
+	         copy_LP(firCoef_LP, firCoef_LP_03);
+	         copy_HP(firCoef_HP, firCoef_HP_03);
+	       } else if(cutOffFreq == 0.4) {
+	         copy_LP(firCoef_LP, firCoef_LP_04);
+	         copy_HP(firCoef_HP, firCoef_HP_04);
+	       } else if(cutOffFreq == 0.5) {
+	         copy_LP(firCoef_LP, firCoef_LP_05);
+	         copy_HP(firCoef_HP, firCoef_HP_05);
+	       } else if(cutOffFreq == 0.6) {
+	         copy_LP(firCoef_LP, firCoef_LP_06);
+	         copy_HP(firCoef_HP, firCoef_HP_06);
+	       } else if(cutOffFreq == 0.7) {
+	         copy_LP(firCoef_LP, firCoef_LP_07);
+	         copy_HP(firCoef_HP, firCoef_HP_07);
+	       } else if(cutOffFreq == 0.8) {
+	         copy_LP(firCoef_LP, firCoef_LP_08);
+	         copy_HP(firCoef_HP, firCoef_HP_08);
+	       } else {
+	         copy_LP(firCoef_LP, firCoef_LP_09);
+	         copy_HP(firCoef_HP, firCoef_HP_09);
+	       }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -247,44 +269,45 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-	for(int i = 0; i < BUFFER_SIZE; ++i)
-		array[i] = buffer[i];
-
-	float sum = 0;
-
-	if(filterType = 1) {								//filterType = 1 -> HP
-		for(int n = 0; n < BUFFER_SIZE; ++n) {			//L = BUFFER_SIZE
-			for(int k = 0; k < BUFFER_SIZE; ++k) {		//N = L - 1 = BUFFER_SIZE - 1
-				if(n - k >= 0)
-					sum += firCoef_HP[k] * array[n-k];
-				else
-					sum = 0;
-			}
-			filteredArray[n] = sum;
-			sum = 0;
+	for(int i = 0; i < BUFFER_SIZE; ++i) {
+			array[i] = -AMP + (float)buffer[i]/FS_INT * 2;
+			arrayInt[i] = buffer[i];
 		}
-	} else {											//filterType = 0 -> LP
-		for(int n = 0; n < BUFFER_SIZE; ++n) {
-			for(int k = 0; k < BUFFER_SIZE; ++k) {
-				if(n - k >= 0)
-					sum += firCoef_LP[k] * array[n-k];
-				else
-					sum = 0;
+
+		float sum = 0;
+
+		if(filterType == 1) {								//filterType = 1 -> HP
+			for(int n = 0; n < BUFFER_SIZE; ++n) {			//L = BUFFER_SIZE
+				for(int k = 0; k < BUFFER_SIZE + 1; ++k) {		//N = L - 1 = BUFFER_SIZE - 1
+					if(n - k >= 0)
+						sum += firCoef_HP[k] * array[n-k];
+				}
+				filteredArray[n] = sum;
+				sum = 0;
 			}
-			filteredArray[n] = sum;
-			sum = 0;
+		} else {											//filterType = 0 -> LP
+			for(int n = 0; n < BUFFER_SIZE; ++n) {
+				for(int k = 0; k < BUFFER_SIZE; ++k) {
+					if(n - k >= 0)
+						sum += firCoef_LP[k] * array[n-k];
+				}
+				filteredArray[n] = sum;
+				sum = 0;
+			}
 		}
-	}
+		for(int i=0; i<BUFFER_SIZE; i++) {
+			filteredArray_int[i] = filteredArray[i] * FS_INT_HALF + FS_INT_HALF;
+		}
 }
 
-void firCoefInit(void) {
-	//PUNJENJE HP FILTRA S KOEFICIJENTIMA:
+void copy_LP(volatile float* array1, float *array2) {
+	for (int i = 0; i < BUFFER_SIZE; i++)
+		*(array1 + i) = *(array2 + i);
+}
 
-	//PUNJENJE LP FILTRA S KOEFICIJENTIMA:
-	//firCoef_LP =
-
-
-
+void copy_HP(volatile float* array1, float *array2) {
+	for (int i = 0; i < BUFFER_SIZE + 1; i++)
+		*(array1 + i) = *(array2 + i);
 }
 /* USER CODE END 4 */
 

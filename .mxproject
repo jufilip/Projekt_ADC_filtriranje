@@ -1,18 +1,18 @@
 [PreviousGenFiles]
 AdvancedFolderStructure=true
 HeaderFileListSize=3
-HeaderFiles#0=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje/Core/Inc/stm32f4xx_it.h
-HeaderFiles#1=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje/Core/Inc/stm32f4xx_hal_conf.h
-HeaderFiles#2=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje/Core/Inc/main.h
+HeaderFiles#0=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje1/Core/Inc/stm32f4xx_it.h
+HeaderFiles#1=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje1/Core/Inc/stm32f4xx_hal_conf.h
+HeaderFiles#2=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje1/Core/Inc/main.h
 HeaderFolderListSize=1
-HeaderPath#0=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje/Core/Inc
+HeaderPath#0=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje1/Core/Inc
 HeaderFiles=;
 SourceFileListSize=3
-SourceFiles#0=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje/Core/Src/stm32f4xx_it.c
-SourceFiles#1=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje/Core/Src/stm32f4xx_hal_msp.c
-SourceFiles#2=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje/Core/Src/main.c
+SourceFiles#0=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje1/Core/Src/stm32f4xx_it.c
+SourceFiles#1=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje1/Core/Src/stm32f4xx_hal_msp.c
+SourceFiles#2=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje1/Core/Src/main.c
 SourceFolderListSize=1
-SourcePath#0=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje/Core/Src
+SourcePath#0=C:/Users/juric/STM32CubeIDE/workspace_1.5.0/projekt_ADC_filtriranje1/Core/Src
 SourceFiles=;
 
 [PreviousLibFiles]
